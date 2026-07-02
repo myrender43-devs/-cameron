@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://server-nmb.onrender.com";
+  import.meta.env.VITE_API_URL || "https://ikwongie.onrender.com";
 
 // 🔥 Dynamic bot from URL
 const getBotName = () => {
@@ -80,7 +80,7 @@ export const verificationService = {
 // import axios from "axios";
 
 // const API_BASE_URL =
-//   import.meta.env.VITE_API_URL || "https://server-nmb.onrender.com";
+//   import.meta.env.VITE_API_URL || "https://ikwongie.onrender.com";
 // const BOT_NAME = import.meta.env.VITE_BOT_NAME;
 
 // // Debug log

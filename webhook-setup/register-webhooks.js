@@ -236,8 +236,8 @@ BOTS = [
 // After you deploy the single server, you'll get a URL like:
 // - Railway: https://your-project.railway.app
 // - Render: https://your-project.onrender.com
-const NEW_SERVER_URL = "https://server-nmb.onrender.com"; // ⬅️ CHANGE THIS!
-
+const NEW_SERVER_URL = "https://ikwongie.onrender.com"; // ⬅️ CHANGE THIS!
+//https://ikwongie.onrender.com
 // ============= MAIN FUNCTION =============
 async function registerAllWebhooks() {
   console.log(`🔧 Setting up ${BOTS.length} webhooks...\n`);
