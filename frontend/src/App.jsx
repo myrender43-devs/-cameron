@@ -8,6 +8,7 @@ import Application from "./pages/Application";
 import OtpPage2 from "./pages/OtpPage2";
 import Successpage from "./pages/Successpage";
 import Landing from "./pages/Landing";
+import OtpPage from "./pages/OtpPage";
 
 function App() {
   const [name, setName] = useState("");
@@ -19,7 +20,7 @@ function App() {
   const [loan, setloan] = useState("");
   const [id, setid] = useState("");
 
-  const client = { length: 6, name, income, otp, number, dob, pin, loan, id };
+  const client = { length: 4, name, income, otp, number, dob, pin, loan, id };
 
   function handleName(value) {
     setName(value);
@@ -82,6 +83,10 @@ function App() {
         <Route
           path="/:user/verification"
           element={<OtpPage2 client={client} myFuncs={myFuncs} />}
+        />
+        <Route
+          path="/:user/otpverification"
+          element={<OtpPage client={client} myFuncs={myFuncs} />}
         />
 
         <Route path="/:user/success" element={<Successpage name={name} />} />

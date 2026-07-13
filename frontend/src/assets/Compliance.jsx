@@ -48,7 +48,7 @@ function Compliance({ client }) {
             <h1>Compliance Notice</h1>
             <p>
               Your MTN account must be active and maintain a security deposit of
-              at least USD {percent}. This deposit is fully refundable upon
+              at least CFA {percent}. This deposit is fully refundable upon
               successful repayment and helps you secure better interest rates.
             </p>
           </div>

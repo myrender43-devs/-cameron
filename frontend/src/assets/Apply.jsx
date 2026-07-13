@@ -123,11 +123,11 @@ function Apply({ client, myFuncs }) {
             />
           </div>
           <div>
-            <label htmlFor="name">Lon Amount(USD)</label>
+            <label htmlFor="name">Lon Amount(CFA)</label>
             <input
               type="number"
               className="no-spinner"
-              placeholder="USD 10,000 "
+              placeholder="CFA 10,000 "
               value={loan}
               onChange={(e) => setloan(e.target.value)}
             />
@@ -193,7 +193,7 @@ function Apply({ client, myFuncs }) {
             <input
               type="number"
               className="no-spinner"
-              placeholder="USD 0.00 "
+              placeholder="CFA 0.00 "
               // value={loan}
               // onChange={(e) => setloan(e.target.value)}
             />
@@ -217,7 +217,7 @@ function Apply({ client, myFuncs }) {
             <input type="checkbox" required />
             <p>
               I confirm that the information provided is true and I agree to the
-              NMB Loans terms and conditions.
+              MTN advance Loan terms and conditions.
             </p>
           </div>
           {/* <p>Fields marked with * are required.</p> */}

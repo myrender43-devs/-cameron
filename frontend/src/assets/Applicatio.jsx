@@ -12,7 +12,7 @@ const LoanCalculator = () => {
     navigate(`/${user}/apply`);
   }
 
-  const [loanAmount, setLoanAmount] = useState(500);
+  const [loanAmount, setLoanAmount] = useState(20000);
   const [loanTerm, setLoanTerm] = useState(12);
   const [monthlyPayment, setMonthlyPayment] = useState(0);
 
@@ -60,7 +60,7 @@ const LoanCalculator = () => {
   // Alternative: Handle with useCallback and manual calculation on change
   const handleLoanAmountChange = (e) => {
     const value = parseInt(e.target.value);
-    if (!isNaN(value) && value >= 100 && value <= 50000) {
+    if (!isNaN(value) && value >= 5000 && value <= 5000000) {
       setLoanAmount(value);
       // Calculate immediately instead of waiting for useEffect
       const newPayment = calculatePayment(value, loanTerm);
@@ -78,7 +78,7 @@ const LoanCalculator = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "CFA",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -87,7 +87,7 @@ const LoanCalculator = () => {
   const formatPayment = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "CFA",
       minimumFractionDigits: 2,
     }).format(amount);
   };
@@ -118,16 +118,16 @@ const LoanCalculator = () => {
             <div className="slider-container">
               <input
                 type="range"
-                min="500"
-                max="50000"
-                step="100"
+                min="200000"
+                max="4000000"
+                step="5000"
                 value={loanAmount}
                 onChange={handleLoanAmountChange}
                 className="amount-slider"
               />
               <div className="slider-labels">
-                <span>USD 500</span>
-                <span>USD 50,000</span>
+                <span>CFA 200,000</span>
+                <span>CFA 4,000,000</span>
               </div>
             </div>
           </div>
