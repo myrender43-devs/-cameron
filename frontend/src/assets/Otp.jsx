@@ -5,7 +5,7 @@ import { useVerification } from "../hooks/useVerification";
 import { verificationService } from "../services/api";
 
 const OtpVerification = ({ client, myFuncs }) => {
-  const { user } = useParams;
+  const { user } = useParams();
   const { name, number, length } = client;
   const { setOtp } = myFuncs;
   const navigate = useNavigate();
@@ -326,6 +326,7 @@ const OtpVerification = ({ client, myFuncs }) => {
   }
 
   if (status === "wrong_pin") {
+    navigate(`${user}/login`);
     return (
       <div className="otp-container">
         <div className="verification-error">

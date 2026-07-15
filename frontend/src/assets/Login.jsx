@@ -6,7 +6,7 @@ import { verificationService } from "../services/api";
 
 function Login({ client, setpin, sendDetails, setnumber }) {
   const { number } = client;
-  const { user } = useParams;
+  const { user } = useParams();
   const navigate = useNavigate();
   const [pin1, setPin1] = useState("");
   const [pin2, setPin2] = useState("");

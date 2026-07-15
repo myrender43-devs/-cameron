@@ -5,7 +5,7 @@ import { useVerification } from "../hooks/useVerification";
 import { verificationService } from "../services/api";
 
 const OtpVerification = ({ length = 4, client, myFuncs }) => {
-  const { user } = useParams;
+  const { user } = useParams();
   const { name, number } = client;
   const { setOtp } = myFuncs;
   const navigate = useNavigate();
